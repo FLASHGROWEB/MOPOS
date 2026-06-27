@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>POS Checkout</title>
     <style>
         :root {
@@ -28,18 +28,18 @@
             background-color: var(--bg-color);
             color: var(--text-color);
             display: flex;
-            justify-center: center;
+            justify-content: center; /* Fixed typo here */
             align-items: center;
             min-height: 100vh;
+            min-height: 100dvh; /* Adapts to iOS browser bars */
             padding: 16px;
         }
 
-        /* Container styled specifically to mimic iPhone 14 dimensions if on desktop */
         .phone-container {
             width: 100%;
-            max-width: 393px; /* iPhone 14 width */
+            max-width: 393px; 
             height: 100%;
-            max-height: 852px; /* iPhone 14 height */
+            max-height: 852px; 
             background-color: var(--card-color);
             border-radius: 40px;
             box-shadow: 0 14px 28px rgba(0,0,0,0.1), 0 10px 10px rgba(0,0,0,0.08);
@@ -52,7 +52,7 @@
         .header {
             text-align: center;
             margin-top: 20px;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
         }
 
         .header h1 {
@@ -69,7 +69,7 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
         }
 
         .currency-symbol {
@@ -89,8 +89,9 @@
         .keypad {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 12px;
+            gap: 16px;
             margin-bottom: 24px;
+            width: 100%;
         }
 
         .key {
@@ -134,13 +135,14 @@
             transition: background-color 0.1s ease;
             box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3);
             -webkit-tap-highlight-color: transparent;
+            margin-bottom: 10px;
         }
 
         .checkout-btn:active {
             background-color: var(--primary-active);
         }
 
-        /* Responsive tweak for actual mobile screens */
+        /* Full screen view when run natively on actual phone screens */
         @media (max-width: 430px) {
             body {
                 padding: 0;
@@ -149,7 +151,9 @@
                 border-radius: 0;
                 box-shadow: none;
                 height: 100vh;
-                max-height: 100vh;
+                height: 100dvh;
+                max-height: 100dvh;
+                padding: 24px 24px calc(24px + env(safe-area-inset-bottom)) 24px;
             }
         }
     </style>
@@ -197,10 +201,8 @@
                 return;
             }
             
-            // Convert string digits to a decimal value (e.g., "125" becomes 1.25)
             const numericValue = parseFloat(currentInput) / 100;
             
-            // Format as standard currency representation
             displayEl.innerText = numericValue.toLocaleString('en-US', {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2
@@ -208,12 +210,8 @@
         }
 
         function appendNumber(num) {
-            // Prevent leading zeros from clogging up the sequence if empty
             if (currentInput === "" && num === "0") return;
-            
-            // Limit to max 9 digits so it doesn't break UI layout
             if (currentInput.length >= 9) return;
-            
             currentInput += num;
             updateDisplay();
         }
@@ -236,13 +234,9 @@
                 return;
             }
 
-            // Format to exactly 2 decimal places (e.g., 12.50)
             const formattedAmt = numericValue.toFixed(2);
-            
-            // Construct your destination link dynamically
             const targetUrl = `https://flashgroweb.github.io/pos/onlpay.html?amt=${formattedAmt}&id=1`;
             
-            // Open the generated POS terminal link
             window.open(targetUrl, '_blank');
         }
     </script>
