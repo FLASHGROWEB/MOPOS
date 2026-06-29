@@ -305,22 +305,30 @@
             transform: translateX(20px);
         }
 
-        /* Mock Webview and Confirmation Dialog Overlays */
+        /* Overlays Management */
         .overlay {
             display: none;
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
             background: rgba(0,0,0,0.4);
             z-index: 10;
-            justify-content: center;
-            align-items: flex-end;
         }
 
+        #webviewOverlay {
+            align-items: flex-end;
+            justify-content: center;
+        }
+
+        #statusOverlay {
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* FIXED: Now spans 100% height and width to completely fill the screen */
         .webview-container {
             width: 100%;
-            height: 85%;
+            height: 100%;
             background: var(--card-color);
-            border-radius: 20px 20px 0 0;
             display: flex;
             flex-direction: column;
             overflow: hidden;
@@ -328,11 +336,12 @@
 
         .webview-header {
             background: var(--btn-bg);
-            padding: 12px;
+            padding: 16px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             border-bottom: 1px solid var(--nav-border);
+            padding-top: calc(16px + env(safe-area-inset-top)); /* Accounts for iPhone notch space */
         }
 
         .close-web-btn {
@@ -350,8 +359,6 @@
             border-radius: 14px;
             padding: 20px;
             text-align: center;
-            margin-bottom: auto;
-            margin-top: auto;
             box-shadow: 0 10px 25px rgba(0,0,0,0.2);
         }
 
@@ -381,7 +388,7 @@
             color: white;
         }
 
-        /* Full screen view when run natively on screens */
+        /* Full screen view when run natively on mobile screens */
         @media (max-width: 430px) {
             body { padding: 0; }
             .phone-container {
@@ -468,10 +475,10 @@
         <div id="webviewOverlay" class="overlay">
             <div class="webview-container">
                 <div class="webview-header">
-                    <span style="font-weight: 500;">Secure Checkout</span>
+                    <span style="font-weight: 600;">Secure Checkout</span>
                     <button class="close-web-btn" onclick="triggerStatusDialog()">Close WebView</button>
                 </div>
-                <iframe id="checkoutIframe" src="" style="width:100%; height:100%; border:none; background:#fff;"></iframe>
+                <iframe id="checkoutIframe" src="" style="width:100%; flex-grow: 1; border:none; background:#fff;"></iframe>
             </div>
         </div>
 
@@ -523,7 +530,6 @@
             updateDisplay();
         }
 
-        // Navigation feature
         function switchTab(tabId, element) {
             document.querySelectorAll('.tab-view').forEach(view => view.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
@@ -532,13 +538,11 @@
             element.classList.add('active');
         }
 
-        // Theme controller (Light/Dark Mode)
         function toggleTheme() {
             const isDark = document.getElementById('themeToggle').checked;
             document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
         }
 
-        // Checkout handling utilizing our internal iframe view
         function handleCheckout() {
             const numericValue = currentInput === "" ? 0 : parseFloat(currentInput) / 100;
             
@@ -550,19 +554,16 @@
             pendingSaleAmount = numericValue.toFixed(2);
             const targetUrl = `https://flashgroweb.github.io/pos/onlpay.html?amt=${pendingSaleAmount}&id=2`;
             
-            // Open target inside the customized popup webview element
             document.getElementById('checkoutIframe').src = targetUrl;
             document.getElementById('webviewOverlay').style.display = 'flex';
         }
 
-        // Close out webview overlay and pull up confirmation check
         function triggerStatusDialog() {
             document.getElementById('webviewOverlay').style.display = 'none';
-            document.getElementById('checkoutIframe').src = ""; // teardown source
+            document.getElementById('checkoutIframe').src = ""; 
             document.getElementById('statusOverlay').style.display = 'flex';
         }
 
-        // Log to history depending on user confirmation selection
         function confirmSaleStatus(isCompleted) {
             document.getElementById('statusOverlay').style.display = 'none';
             
@@ -592,10 +593,7 @@
                 `;
             }
 
-            // Insert to top of list
             logContainer.insertBefore(listItem, logContainer.firstChild);
-            
-            // Clean interface slate
             clearDisplay();
         }
     </script>
