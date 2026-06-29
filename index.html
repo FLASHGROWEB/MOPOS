@@ -14,6 +14,17 @@
             --btn-bg: #e5e5ea;
             --btn-active: #d1d1d6;
             --danger-color: #ff3b30;
+            --success-color: #34c759;
+            --nav-border: #d1d1d6;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #1c1c1e;
+            --card-color: #2c2c2e;
+            --text-color: #ffffff;
+            --btn-bg: #3a3a3c;
+            --btn-active: #48484a;
+            --nav-border: #3a3a3c;
         }
 
         * {
@@ -22,31 +33,51 @@
             padding: 0;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             user-select: none;
+            transition: background-color 0.2s ease, color 0.2s ease;
         }
 
         body {
             background-color: var(--bg-color);
             color: var(--text-color);
             display: flex;
-            justify-content: center; /* Fixed typo here */
+            justify-content: center;
             align-items: center;
             min-height: 100vh;
-            min-height: 100dvh; /* Adapts to iOS browser bars */
+            min-height: 100dvh;
             padding: 16px;
         }
 
         .phone-container {
             width: 100%;
             max-width: 393px; 
-            height: 100%;
-            max-height: 852px; 
+            height: 852px; 
             background-color: var(--card-color);
             border-radius: 40px;
             box-shadow: 0 14px 28px rgba(0,0,0,0.1), 0 10px 10px rgba(0,0,0,0.08);
             display: flex;
             flex-direction: column;
             overflow: hidden;
-            padding: 24px;
+            position: relative;
+        }
+
+        /* Views management */
+        .view-content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 24px 24px 0 24px;
+            overflow-y: auto;
+            height: calc(100% - 75px);
+        }
+
+        .tab-view {
+            display: none;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .tab-view.active {
+            display: flex;
         }
 
         .header {
@@ -90,7 +121,7 @@
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 16px;
-            margin-bottom: 24px;
+            margin-bottom: 20px;
             width: 100%;
         }
 
@@ -106,7 +137,6 @@
             justify-content: center;
             align-items: center;
             cursor: pointer;
-            transition: background-color 0.1s ease;
             -webkit-tap-highlight-color: transparent;
         }
 
@@ -127,33 +157,239 @@
             color: white;
             border: none;
             border-radius: 16px;
-            padding: 18px;
+            padding: 16px;
             font-size: 1.2rem;
             font-weight: 600;
             width: 100%;
             cursor: pointer;
-            transition: background-color 0.1s ease;
             box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3);
             -webkit-tap-highlight-color: transparent;
-            margin-bottom: 10px;
+            margin-bottom: 20px;
         }
 
         .checkout-btn:active {
             background-color: var(--primary-active);
         }
 
-        /* Full screen view when run natively on actual phone screens */
+        /* Bottom Nav Menu */
+        .bottom-nav {
+            display: flex;
+            border-top: 1px solid var(--nav-border);
+            height: 75px;
+            background-color: var(--card-color);
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+
+        .nav-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: none;
+            border: none;
+            color: #8e8e93;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 500;
+            gap: 4px;
+        }
+
+        .nav-item.active {
+            color: var(--primary-color);
+        }
+
+        .nav-item svg {
+            width: 24px;
+            height: 24px;
+            fill: currentColor;
+        }
+
+        /* History & Settings Styling */
+        .history-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 10px;
+        }
+
+        .history-item {
+            background: var(--btn-bg);
+            padding: 14px;
+            border-radius: 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .history-details {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .history-time {
+            font-size: 0.8rem;
+            color: #8e8e93;
+        }
+
+        .status-badge {
+            font-size: 0.85rem;
+            font-weight: 600;
+            padding: 4px 8px;
+            border-radius: 6px;
+        }
+
+        .status-success {
+            background-color: rgba(52, 199, 89, 0.2);
+            color: var(--success-color);
+        }
+
+        .status-cancelled {
+            background-color: rgba(255, 59, 48, 0.2);
+            color: var(--danger-color);
+        }
+
+        .settings-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--btn-bg);
+            padding: 16px;
+            border-radius: 14px;
+            margin-top: 10px;
+        }
+
+        /* Toggle Switch Styling */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 51px;
+            height: 31px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #e5e5ea;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 27px;
+            width: 27px;
+            left: 2px;
+            bottom: 2px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+        }
+
+        input:checked + .slider {
+            background-color: var(--success-color);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(20px);
+        }
+
+        /* Mock Webview and Confirmation Dialog Overlays */
+        .overlay {
+            display: none;
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.4);
+            z-index: 10;
+            justify-content: center;
+            align-items: flex-end;
+        }
+
+        .webview-container {
+            width: 100%;
+            height: 85%;
+            background: var(--card-color);
+            border-radius: 20px 20px 0 0;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .webview-header {
+            background: var(--btn-bg);
+            padding: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--nav-border);
+        }
+
+        .close-web-btn {
+            background: transparent;
+            border: none;
+            color: var(--primary-color);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .mock-dialog {
+            background: var(--card-color);
+            width: 85%;
+            border-radius: 14px;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: auto;
+            margin-top: auto;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+
+        .dialog-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .dialog-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .dialog-btn.done {
+            background-color: var(--success-color);
+            color: white;
+        }
+
+        .dialog-btn.cancel {
+            background-color: var(--danger-color);
+            color: white;
+        }
+
+        /* Full screen view when run natively on screens */
         @media (max-width: 430px) {
-            body {
-                padding: 0;
-            }
+            body { padding: 0; }
             .phone-container {
                 border-radius: 0;
                 box-shadow: none;
                 height: 100vh;
                 height: 100dvh;
                 max-height: 100dvh;
-                padding: 24px 24px calc(24px + env(safe-area-inset-bottom)) 24px;
             }
         }
     </style>
@@ -161,38 +397,100 @@
 <body>
 
     <div class="phone-container">
-        <div class="header">
-            <h1>Point of Sale</h1>
+        <div class="view-content">
+            
+            <div id="goView" class="tab-view active">
+                <div class="header">
+                    <h1>Point of Sale</h1>
+                </div>
+                <div class="display-container">
+                    <div class="currency-symbol">$</div>
+                    <div class="amount-display" id="display">0.00</div>
+                </div>
+                <div class="keypad">
+                    <button class="key" onclick="appendNumber('1')">1</button>
+                    <button class="key" onclick="appendNumber('2')">2</button>
+                    <button class="key" onclick="appendNumber('3')">3</button>
+                    
+                    <button class="key" onclick="appendNumber('4')">4</button>
+                    <button class="key" onclick="appendNumber('5')">5</button>
+                    <button class="key" onclick="appendNumber('6')">6</button>
+                    
+                    <button class="key" onclick="appendNumber('7')">7</button>
+                    <button class="key" onclick="appendNumber('8')">8</button>
+                    <button class="key" onclick="appendNumber('9')">9</button>
+                    
+                    <button class="key action clear" onclick="clearDisplay()">C</button>
+                    <button class="key" onclick="appendNumber('0')">0</button>
+                    <button class="key action" onclick="deleteLast()">⌫</button>
+                </div>
+                <button class="checkout-btn" onclick="handleCheckout()">Check Out</button>
+            </div>
+
+            <div id="historyView" class="tab-view">
+                <div class="header">
+                    <h1>History</h1>
+                </div>
+                <ul class="history-list" id="historyLog">
+                    </ul>
+            </div>
+
+            <div id="settingsView" class="tab-view">
+                <div class="header">
+                    <h1>Settings</h1>
+                </div>
+                <div class="settings-row">
+                    <span>Dark Mode</span>
+                    <label class="switch">
+                        <input type="checkbox" id="themeToggle" onchange="toggleTheme()">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+
         </div>
 
-        <div class="display-container">
-            <div class="currency-symbol">$</div>
-            <div class="amount-display" id="display">0.00</div>
+        <nav class="bottom-nav">
+            <button class="nav-item active" onclick="switchTab('goView', this)">
+                <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+                Go
+            </button>
+            <button class="nav-item" onclick="switchTab('historyView', this)">
+                <svg viewBox="0 0 24 24"><path d="M13 3c-4.97 0-9 4.03-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42C8.27 19.99 10.51 21 13 21c4.97 0 9-4.03 9-9s-4.03-9-9-9zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z"/></svg>
+                History
+            </button>
+            <button class="nav-item" onclick="switchTab('settingsView', this)">
+                <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+                Settings
+            </button>
+        </nav>
+
+        <div id="webviewOverlay" class="overlay">
+            <div class="webview-container">
+                <div class="webview-header">
+                    <span style="font-weight: 500;">Secure Checkout</span>
+                    <button class="close-web-btn" onclick="triggerStatusDialog()">Close WebView</button>
+                </div>
+                <iframe id="checkoutIframe" src="" style="width:100%; height:100%; border:none; background:#fff;"></iframe>
+            </div>
         </div>
 
-        <div class="keypad">
-            <button class="key" onclick="appendNumber('1')">1</button>
-            <button class="key" onclick="appendNumber('2')">2</button>
-            <button class="key" onclick="appendNumber('3')">3</button>
-            
-            <button class="key" onclick="appendNumber('4')">4</button>
-            <button class="key" onclick="appendNumber('5')">5</button>
-            <button class="key" onclick="appendNumber('6')">6</button>
-            
-            <button class="key" onclick="appendNumber('7')">7</button>
-            <button class="key" onclick="appendNumber('8')">8</button>
-            <button class="key" onclick="appendNumber('9')">9</button>
-            
-            <button class="key action clear" onclick="clearDisplay()">C</button>
-            <button class="key" onclick="appendNumber('0')">0</button>
-            <button class="key action" onclick="deleteLast()">⌫</button>
+        <div id="statusOverlay" class="overlay">
+            <div class="mock-dialog">
+                <h3 style="margin-bottom: 8px;">Was the sale completed?</h3>
+                <p style="color:#8e8e93; font-size:0.9rem;">Log this outcome into your sales history records.</p>
+                <div class="dialog-buttons">
+                    <button class="dialog-btn done" onclick="confirmSaleStatus(true)">Done</button>
+                    <button class="dialog-btn cancel" onclick="confirmSaleStatus(false)">Cancel</button>
+                </div>
+            </div>
         </div>
 
-        <button class="checkout-btn" onclick="handleCheckout()">Check Out</button>
     </div>
 
     <script>
         let currentInput = "";
+        let pendingSaleAmount = "0.00";
 
         function updateDisplay() {
             const displayEl = document.getElementById('display');
@@ -202,7 +500,6 @@
             }
             
             const numericValue = parseFloat(currentInput) / 100;
-            
             displayEl.innerText = numericValue.toLocaleString('en-US', {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2
@@ -226,6 +523,22 @@
             updateDisplay();
         }
 
+        // Navigation feature
+        function switchTab(tabId, element) {
+            document.querySelectorAll('.tab-view').forEach(view => view.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            
+            document.getElementById(tabId).classList.add('active');
+            element.classList.add('active');
+        }
+
+        // Theme controller (Light/Dark Mode)
+        function toggleTheme() {
+            const isDark = document.getElementById('themeToggle').checked;
+            document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+        }
+
+        // Checkout handling utilizing our internal iframe view
         function handleCheckout() {
             const numericValue = currentInput === "" ? 0 : parseFloat(currentInput) / 100;
             
@@ -234,10 +547,56 @@
                 return;
             }
 
-            const formattedAmt = numericValue.toFixed(2);
-            const targetUrl = `https://flashgroweb.github.io/pos/onlpay.html?amt=${formattedAmt}&id=2`;
+            pendingSaleAmount = numericValue.toFixed(2);
+            const targetUrl = `https://flashgroweb.github.io/pos/onlpay.html?amt=${pendingSaleAmount}&id=2`;
             
-            window.open(targetUrl, '_blank');
+            // Open target inside the customized popup webview element
+            document.getElementById('checkoutIframe').src = targetUrl;
+            document.getElementById('webviewOverlay').style.display = 'flex';
+        }
+
+        // Close out webview overlay and pull up confirmation check
+        function triggerStatusDialog() {
+            document.getElementById('webviewOverlay').style.display = 'none';
+            document.getElementById('checkoutIframe').src = ""; // teardown source
+            document.getElementById('statusOverlay').style.display = 'flex';
+        }
+
+        // Log to history depending on user confirmation selection
+        function confirmSaleStatus(isCompleted) {
+            document.getElementById('statusOverlay').style.display = 'none';
+            
+            const now = new Date();
+            const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            const dateString = now.toLocaleDateString([], { month: 'short', day: 'numeric' });
+
+            const logContainer = document.getElementById('historyLog');
+            const listItem = document.createElement('li');
+            listItem.className = 'history-item';
+            
+            if (isCompleted) {
+                listItem.innerHTML = `
+                    <div class="history-details">
+                        <strong>$${pendingSaleAmount}</strong>
+                        <span class="history-time">${dateString}, ${timeString}</span>
+                    </div>
+                    <span class="status-badge status-success">Completed</span>
+                `;
+            } else {
+                listItem.innerHTML = `
+                    <div class="history-details">
+                        <strong>$${pendingSaleAmount}</strong>
+                        <span class="history-time">${dateString}, ${timeString}</span>
+                    </div>
+                    <span class="status-badge status-cancelled">Cancelled</span>
+                `;
+            }
+
+            // Insert to top of list
+            logContainer.insertBefore(listItem, logContainer.firstChild);
+            
+            // Clean interface slate
+            clearDisplay();
         }
     </script>
 </body>
